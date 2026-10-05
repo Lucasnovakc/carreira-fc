@@ -144,9 +144,10 @@ Overall limitado a 40–99. Idade inicial = idade do atleta no ano daquele elenc
 | 11º–16º | nenhuma |
 | 17º–20º | 3 ruins, **obrigatórias** |
 
-**Bônus por título de copa** (soma com a tabela acima): +1 roleta boa opcional para cada título de **Copa do Brasil**, **Sul-Americana** e **Libertadores** conquistado na temporada. Estadual não dá bônus. Ex.: 3º no Brasileirão + campeão da Copa do Brasil = 3 roletas boas. Um time entre os 4 últimos que ganhe uma copa recebe as 3 ruins obrigatórias **e** a boa do título.
+**Bônus por título de copa** (soma com a tabela acima): +1 roleta boa opcional para cada título de **Copa do Brasil**, **Sul-Americana** e **Libertadores** conquistado na temporada. Título **estadual** dá +1 roleta **média** opcional: sorteia um elenco como a boa, mas só oferece atletas com overall **≤ 85** (sem lendas) — serve mais para achar um reserva útil. Ex.: 3º no Brasileirão + campeão da Copa do Brasil = 3 roletas boas. Um time entre os 4 últimos que ganhe uma copa recebe as 3 ruins obrigatórias **e** a boa do título.
 
 - **Boa:** sorteia um elenco; o usuário escolhe um atleta e quem sai, ou recusa.
+- **Média (título estadual):** igual à boa, opcional, mas só lista atletas com overall ≤ 85.
 - **Ruim:** sorteia apenas atletas com overall ≤ 68 de qualquer elenco da base; o usuário é obrigado a aceitar e escolhe quem sai.
 - **Reposição (aposentadoria):** igual à boa, mas obrigatória.
 - Atleta já presente no elenco do usuário não pode ser sorteado de novo.
