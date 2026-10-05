@@ -1,0 +1,138 @@
+{
+  "SP": {
+    "nome": "Paulistão",
+    "clubes": [
+      "corinthians",
+      "palmeiras",
+      "santos",
+      "sao-paulo",
+      "bragantino",
+      "mirassol",
+      "novorizontino",
+      "ponte-preta",
+      "guarani",
+      "botafogo-sp",
+      "portuguesa",
+      "sao-bernardo"
+    ]
+  },
+  "RJ": {
+    "nome": "Carioca",
+    "clubes": [
+      "flamengo",
+      "fluminense",
+      "botafogo",
+      "vasco",
+      "volta-redonda",
+      "madureira",
+      "bangu",
+      "portuguesa-rj",
+      "nova-iguacu",
+      "boavista",
+      "sampaio-correa-rj",
+      "marica"
+    ]
+  },
+  "MG": {
+    "nome": "Mineiro",
+    "clubes": [
+      "atletico-mg",
+      "cruzeiro",
+      "america-mg",
+      "athletic-club",
+      "tombense",
+      "villa-nova",
+      "pouso-alegre",
+      "uberlandia",
+      "democrata-gv",
+      "ipatinga",
+      "caldense",
+      "urt"
+    ]
+  },
+  "RS": {
+    "nome": "Gauchão",
+    "clubes": [
+      "gremio",
+      "internacional",
+      "juventude",
+      "caxias",
+      "ypiranga",
+      "sao-jose-rs",
+      "brasil-de-pelotas",
+      "novo-hamburgo",
+      "avenida",
+      "guarany-de-bage",
+      "sao-luiz",
+      "pelotas"
+    ]
+  },
+  "BA": {
+    "nome": "Baianão",
+    "clubes": [
+      "bahia",
+      "vitoria",
+      "jacuipense",
+      "atletico-de-alagoinhas",
+      "juazeirense",
+      "barcelona-de-ilheus",
+      "bahia-de-feira",
+      "jequie",
+      "porto-ba",
+      "colo-colo-ba",
+      "fluminense-de-feira",
+      "vitoria-da-conquista"
+    ]
+  },
+  "PR": {
+    "nome": "Paranaense",
+    "clubes": [
+      "athletico-pr",
+      "coritiba",
+      "operario-pr",
+      "londrina",
+      "maringa",
+      "fc-cascavel",
+      "parana-clube",
+      "cianorte",
+      "azuriz",
+      "andraus",
+      "rio-branco-pr",
+      "foz-do-iguacu"
+    ]
+  },
+  "SC": {
+    "nome": "Catarinense",
+    "clubes": [
+      "chapecoense",
+      "avai",
+      "figueirense",
+      "criciuma",
+      "joinville",
+      "brusque",
+      "marcilio-dias",
+      "concordia",
+      "barra-sc",
+      "hercilio-luz",
+      "inter-de-lages",
+      "camboriu"
+    ]
+  },
+  "PA": {
+    "nome": "Parazão",
+    "clubes": [
+      "remo",
+      "paysandu",
+      "aguia-de-maraba",
+      "tuna-luso",
+      "cameta",
+      "castanhal",
+      "bragantino-pa",
+      "capitao-poco",
+      "sao-raimundo-pa",
+      "canaa",
+      "santa-rosa",
+      "paragominas"
+    ]
+  }
+}
