@@ -7,5 +7,7 @@ export default defineConfig({
   plugins: [react()],
   test: {
     environment: 'node',
+    // a calibração do motor simula milhares de partidas; rodando junto com os testes de tela, passa de 5 s
+    testTimeout: 30000,
   },
 });
