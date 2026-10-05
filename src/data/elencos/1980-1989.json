@@ -76,7 +76,7 @@
       { "nome": "Vaguinho", "pos": "PD", "ovr": 76, "idade": 31 },
       { "nome": "Casagrande", "pos": "CA", "ovr": 84, "idade": 19 },
       { "nome": "Ataliba", "pos": "PE", "ovr": 79, "idade": 25 },
-      { "nome": "Mário", "pos": "CA", "ovr": 66, "idade": 21 },
+      { "nome": "Daniel González", "pos": "ZAG", "ovr": 80, "idade": 25 },
       { "nome": "Paulo Egídio", "pos": "PE", "ovr": 64, "idade": 22 }
     ]
   },
@@ -95,7 +95,7 @@
       { "nome": "Newmar", "pos": "ZAG", "ovr": 70, "idade": 25 },
       { "nome": "Casemiro", "pos": "LE", "ovr": 76, "idade": 26 },
       { "nome": "China", "pos": "VOL", "ovr": 78, "idade": 26 },
-      { "nome": "Bonamigo", "pos": "VOL", "ovr": 78, "idade": 29 },
+      { "nome": "Bonamigo", "pos": "VOL", "ovr": 78, "idade": 23 },
       { "nome": "Osvaldo", "pos": "MC", "ovr": 80, "idade": 28 },
       { "nome": "Mário Sérgio", "pos": "MEI", "ovr": 86, "idade": 33 },
       { "nome": "Paulo César Caju", "pos": "MEI", "ovr": 82, "idade": 34 },
@@ -103,8 +103,8 @@
       { "nome": "Tarciso", "pos": "CA", "ovr": 82, "idade": 32 },
       { "nome": "Caio", "pos": "CA", "ovr": 76, "idade": 25 },
       { "nome": "Tonho", "pos": "PE", "ovr": 74, "idade": 26 },
-      { "nome": "Beto", "pos": "MC", "ovr": 66, "idade": 22 },
-      { "nome": "Henrique", "pos": "LE", "ovr": 64, "idade": 21 }
+      { "nome": "Tita", "pos": "MEI", "ovr": 84, "idade": 25 },
+      { "nome": "Paulo César Magalhães", "pos": "LE", "ovr": 78, "idade": 24 }
     ]
   },
   {
@@ -128,7 +128,7 @@
       { "nome": "Índio", "pos": "CA", "ovr": 78, "idade": 27 },
       { "nome": "Édson", "pos": "PE", "ovr": 74, "idade": 24 },
       { "nome": "Marco Aurélio", "pos": "MC", "ovr": 63, "idade": 22 },
-      { "nome": "Toby", "pos": "CA", "ovr": 62, "idade": 21 },
+      { "nome": "Toninho", "pos": "CA", "ovr": 62, "idade": 21 },
       { "nome": "Aílton", "pos": "PE", "ovr": 63, "idade": 22 },
       { "nome": "Silvinho", "pos": "LD", "ovr": 62, "idade": 21 },
       { "nome": "Paulo Roberto", "pos": "VOL", "ovr": 64, "idade": 24 }
@@ -147,9 +147,9 @@
       { "nome": "Zé Teodoro", "pos": "LD", "ovr": 76, "idade": 26 },
       { "nome": "Oscar", "pos": "ZAG", "ovr": 85, "idade": 32 },
       { "nome": "Dario Pereyra", "pos": "ZAG", "ovr": 85, "idade": 30 },
-      { "nome": "Wagner", "pos": "ZAG", "ovr": 70, "idade": 24 },
+      { "nome": "Wagner Basílio", "pos": "ZAG", "ovr": 70, "idade": 31 },
       { "nome": "Nelsinho", "pos": "LE", "ovr": 82, "idade": 24 },
-      { "nome": "Bernardo", "pos": "VOL", "ovr": 80, "idade": 24 },
+      { "nome": "Bernardo", "pos": "VOL", "ovr": 80, "idade": 21 },
       { "nome": "Manu", "pos": "VOL", "ovr": 74, "idade": 25 },
       { "nome": "Silas", "pos": "MC", "ovr": 84, "idade": 21 },
       { "nome": "Pita", "pos": "MEI", "ovr": 84, "idade": 28 },
@@ -206,7 +206,7 @@
       { "nome": "Andrade", "pos": "VOL", "ovr": 82, "idade": 32 },
       { "nome": "William", "pos": "MC", "ovr": 78, "idade": 26 },
       { "nome": "Bismarck", "pos": "MEI", "ovr": 84, "idade": 20 },
-      { "nome": "Tita", "pos": "MEI", "ovr": 80, "idade": 31 },
+      { "nome": "Boiadeiro", "pos": "VOL", "ovr": 80, "idade": 24 },
       { "nome": "Bebeto", "pos": "CA", "ovr": 88, "idade": 25 },
       { "nome": "Sorato", "pos": "CA", "ovr": 76, "idade": 23 },
       { "nome": "Vivinho", "pos": "PE", "ovr": 76, "idade": 26 },

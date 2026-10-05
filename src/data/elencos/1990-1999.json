@@ -34,7 +34,7 @@
     "cores": ["#ffffff", "#e30613"],
     "jogadores": [
       { "nome": "Zetti", "pos": "GOL", "ovr": 86, "idade": 27 },
-      { "nome": "Gilmar Rinaldi", "pos": "GOL", "ovr": 72, "idade": 33 },
+      { "nome": "Rogério Ceni", "pos": "GOL", "ovr": 60, "idade": 19 },
       { "nome": "Cafu", "pos": "LD", "ovr": 85, "idade": 22 },
       { "nome": "Vítor", "pos": "LD", "ovr": 78, "idade": 26 },
       { "nome": "Antônio Carlos", "pos": "ZAG", "ovr": 84, "idade": 23 },
@@ -50,7 +50,7 @@
       { "nome": "Macedo", "pos": "CA", "ovr": 76, "idade": 25 },
       { "nome": "Catê", "pos": "PE", "ovr": 72, "idade": 19 },
       { "nome": "Dinho", "pos": "VOL", "ovr": 74, "idade": 25 },
-      { "nome": "Válber", "pos": "MC", "ovr": 70, "idade": 25 }
+      { "nome": "Válber", "pos": "MC", "ovr": 70, "idade": 21 }
     ]
   },
   {
@@ -103,7 +103,7 @@
       { "nome": "Iranildo", "pos": "PE", "ovr": 74, "idade": 23 },
       { "nome": "Moisés", "pos": "CA", "ovr": 64, "idade": 22 },
       { "nome": "Márcio Theodoro", "pos": "MC", "ovr": 66, "idade": 23 },
-      { "nome": "Gottardo Jr.", "pos": "LE", "ovr": 60, "idade": 20 },
+      { "nome": "Marcelo", "pos": "LE", "ovr": 60, "idade": 21 },
       { "nome": "Alessandro", "pos": "PE", "ovr": 63, "idade": 21 }
     ]
   },
@@ -156,7 +156,7 @@
       { "nome": "Edmundo", "pos": "CA", "ovr": 89, "idade": 26 },
       { "nome": "Evair", "pos": "CA", "ovr": 82, "idade": 32 },
       { "nome": "Mauricinho", "pos": "PE", "ovr": 72, "idade": 21 },
-      { "nome": "Válber", "pos": "MC", "ovr": 70, "idade": 25 },
+      { "nome": "Válber", "pos": "MC", "ovr": 70, "idade": 26 },
       { "nome": "Moisés", "pos": "PD", "ovr": 64, "idade": 22 },
       { "nome": "Vítor", "pos": "LD", "ovr": 63, "idade": 23 }
     ]
@@ -177,7 +177,7 @@
       { "nome": "Pereira", "pos": "LE", "ovr": 68, "idade": 25 },
       { "nome": "Mabília", "pos": "VOL", "ovr": 70, "idade": 26 },
       { "nome": "Fernando", "pos": "VOL", "ovr": 69, "idade": 25 },
-      { "nome": "Picolé", "pos": "MC", "ovr": 66, "idade": 24 },
+      { "nome": "Rodrigo", "pos": "MC", "ovr": 64, "idade": 23 },
       { "nome": "Márcio Mixirica", "pos": "MEI", "ovr": 72, "idade": 24 },
       { "nome": "Wallace", "pos": "PD", "ovr": 70, "idade": 23 },
       { "nome": "Flávio", "pos": "CA", "ovr": 72, "idade": 26 },
@@ -199,7 +199,7 @@
       { "nome": "Maurício", "pos": "GOL", "ovr": 66, "idade": 25 },
       { "nome": "Índio", "pos": "LD", "ovr": 76, "idade": 25 },
       { "nome": "João Carlos", "pos": "ZAG", "ovr": 78, "idade": 26 },
-      { "nome": "Gamarra", "pos": "ZAG", "ovr": 86, "idade": 28 },
+      { "nome": "Nenê", "pos": "ZAG", "ovr": 74, "idade": 25 },
       { "nome": "Fábio Luciano", "pos": "ZAG", "ovr": 78, "idade": 24 },
       { "nome": "Kléber", "pos": "LE", "ovr": 80, "idade": 19 },
       { "nome": "Vampeta", "pos": "VOL", "ovr": 85, "idade": 25 },

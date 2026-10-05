@@ -324,7 +324,7 @@
   {
     "id": "sampaio-correa-rj",
     "nome": "Sampaio Corrêa-RJ",
-    "sigla": "SCR",
+    "sigla": "SCJ",
     "estado": "RJ",
     "cores": ["#003da5", "#ffffff"],
     "gol": 52,
@@ -432,7 +432,7 @@
   {
     "id": "pouso-alegre",
     "nome": "Pouso Alegre",
-    "sigla": "PAL2",
+    "sigla": "POU",
     "estado": "MG",
     "cores": ["#e30613", "#000000"],
     "gol": 53,
@@ -1137,7 +1137,7 @@
   {
     "id": "camboriu",
     "nome": "Camboriú",
-    "sigla": "CAM2",
+    "sigla": "CBU",
     "estado": "SC",
     "cores": ["#fd7e14", "#000000"],
     "gol": 51,

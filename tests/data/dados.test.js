@@ -136,3 +136,63 @@ describe('elencos', () => {
     expect(elencos.flatMap((e) => e.jogadores).filter((j) => j.ovr >= 90).length).toBeLessThanOrEqual(25);
   });
 });
+
+describe('correções da revisão', () => {
+  it('siglas únicas entre clubes brasileiros e estrangeiros', () => {
+    const siglas = [...clubes, ...estrangeiros].map((c) => c.sigla);
+    const repetidas = siglas.filter((s, i) => siglas.indexOf(s) !== i);
+    expect(repetidas).toEqual([]);
+  });
+
+  // Pega nomes duplicados por engano: "Oldair" / "Oldair Barchi", "Tobi" / "Toby".
+  it('nenhum elenco tem dois nomes quase iguais', () => {
+    const dist = (a, b) => {
+      const d = Array.from({ length: a.length + 1 }, (_, i) => [i, ...Array(b.length).fill(0)]);
+      for (let j = 1; j <= b.length; j++) d[0][j] = j;
+      for (let i = 1; i <= a.length; i++) {
+        for (let j = 1; j <= b.length; j++) {
+          d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+        }
+      }
+      return d[a.length][b.length];
+    };
+    // pares parecidos que são jogadores reais diferentes
+    const REAIS = ['flamengo-1981: Zico / Lico', 'criciuma-1991: Vilmar / Gilmar', 'gremio-1995: Adílson / Arílson', 'flamengo-2019: Diego Alves / Diego'];
+    const suspeitos = [];
+    for (const e of elencos) {
+      const nomes = e.jogadores.map((j) => j.nome);
+      for (let i = 0; i < nomes.length; i++) {
+        for (let k = i + 1; k < nomes.length; k++) {
+          const [a, b] = [nomes[i], nomes[k]];
+          if (dist(a, b) <= 1 || a.startsWith(`${b} `) || b.startsWith(`${a} `)) {
+            const par = `${e.id}: ${a} / ${b}`;
+            if (!REAIS.includes(par)) suspeitos.push(par);
+          }
+        }
+      }
+    }
+    expect(suspeitos).toEqual([]);
+  });
+
+  it('mesmo jogador em dois elencos tem idade coerente com a diferença de anos', () => {
+    const vistos = {};
+    const erros = [];
+    for (const e of elencos) {
+      for (const j of e.jogadores) {
+        (vistos[j.nome] ??= []).push({ ano: e.ano, idade: j.idade, id: e.id });
+      }
+    }
+    const MESMA_PESSOA = ['Toninho Cerezo', 'Felipe Melo', 'Maurinho', 'Válber', 'Edmundo', 'Evair', 'Mazinho', 'Antônio Carlos',
+      'Andrade', 'Zenon', 'Paulo César Caju', 'Diego Tardelli', 'Durval', 'Edu Dracena', 'Elano', 'Marcos Rocha', 'Mayke',
+      'Richarlyson', 'Josué', 'Ceará', 'Bruno Rodrigo', 'Adriano Gabiru', 'Alex Mineiro', 'Romerito', 'Wagner Basílio', 'Rafael Sóbis'];
+    // 'Léo' fica de fora: o do Cruzeiro 2014 (zagueiro) não é o lateral do Santos
+    for (const nome of MESMA_PESSOA) {
+      const v = vistos[nome] ?? [];
+      for (let i = 1; i < v.length; i++) {
+        const esperado = v[0].idade + (v[i].ano - v[0].ano);
+        if (Math.abs(v[i].idade - esperado) > 1) erros.push(`${nome}: ${v[0].id} ${v[0].idade} x ${v[i].id} ${v[i].idade}`);
+      }
+    }
+    expect(erros).toEqual([]);
+  });
+});
