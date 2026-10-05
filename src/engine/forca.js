@@ -5,6 +5,8 @@ export const BONUS_POSTURA = 4;
 export const BONUS_MANDO = 2;
 export const FATOR_DESFALQUE = 0.92;
 export const QUEDA_MAX_CANSACO = 0.1;
+// Times do computador não têm jogadores: cansam como um elenco médio, para não levarem vantagem.
+export const CANSACO_MEDIO_CPU = 50;
 
 // escalacao: [{ jogador: { id, ovr, pos }, vaga }]
 // cansaco: { [jogadorId]: 0..100 }; progresso: 0..1 dentro do 2º tempo
@@ -36,8 +38,12 @@ export function aplicarModificadores(setores, { postura = 'equilibrada', mandant
 
 // lado: { setoresBase?, escalacao?, cansaco, postura, desfalques }
 export function setoresDoLado(lado, { mandante = false, progresso = 0 } = {}) {
-  const base = lado.escalacao
-    ? setoresDaEscalacao(lado.escalacao, lado.cansaco, progresso)
-    : lado.setoresBase;
+  let base;
+  if (lado.escalacao) {
+    base = setoresDaEscalacao(lado.escalacao, lado.cansaco, progresso);
+  } else {
+    const queda = QUEDA_MAX_CANSACO * (CANSACO_MEDIO_CPU / 100) * progresso;
+    base = Object.fromEntries(Object.entries(lado.setoresBase).map(([s, v]) => [s, v * (1 - queda)]));
+  }
   return aplicarModificadores(base, { postura: lado.postura, mandante, desfalques: lado.desfalques });
 }

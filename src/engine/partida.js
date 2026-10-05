@@ -176,10 +176,29 @@ export function aplicarIntervalo(estadoAnterior, chave, { trocas = [], escalacao
   return estado;
 }
 
-// O computador troca jogadores muito cansados por reservas que rendam pelo menos o mesmo no 2º tempo.
-export function intervaloAutomatico(estado, chave) {
+// Se o time ficou sem ninguém no gol: entra o goleiro reserva no lugar do jogador de linha mais fraco,
+// ou, sem goleiro no banco, o jogador de linha que renderia mais no gol muda de vaga.
+function reporGoleiro(estado, chave) {
   const lado = estado[chave];
-  if (!lado.escalacao || estado.tempo !== 1) return estado;
+  if (!lado.escalacao.length || lado.escalacao.some((e) => e.vaga === 'GOL')) return estado;
+  const reserva = lado.trocas < CONST.MAX_TROCAS ? melhorReserva(lado, 'GOL') : null;
+  if (reserva && reserva.pos === 'GOL') {
+    const sai = lado.escalacao.reduce((a, b) => (ovrEfetivo(b.jogador, b.vaga) < ovrEfetivo(a.jogador, a.vaga) ? b : a));
+    const escalacao = lado.escalacao.map((e) =>
+      e.jogador.id === sai.jogador.id ? { jogadorId: reserva.id, vaga: 'GOL' } : { jogadorId: e.jogador.id, vaga: e.vaga });
+    return aplicarIntervalo(estado, chave, { trocas: [{ saiId: sai.jogador.id, entraId: reserva.id }], escalacao });
+  }
+  const vai = lado.escalacao.reduce((a, b) => (ovrEfetivo(b.jogador, 'GOL') > ovrEfetivo(a.jogador, 'GOL') ? b : a));
+  const escalacao = lado.escalacao.map((e) => ({ jogadorId: e.jogador.id, vaga: e === vai ? 'GOL' : e.vaga }));
+  return aplicarIntervalo(estado, chave, { escalacao });
+}
+
+// O computador repõe o goleiro, se preciso, e troca jogadores muito cansados por reservas
+// que rendam pelo menos o mesmo no 2º tempo.
+export function intervaloAutomatico(estadoAnterior, chave) {
+  if (!estadoAnterior[chave].escalacao || estadoAnterior.tempo !== 1) return estadoAnterior;
+  const estado = reporGoleiro(estadoAnterior, chave);
+  const lado = estado[chave];
   const trocas = [];
   const banco = [...lado.banco];
   const cansados = lado.escalacao

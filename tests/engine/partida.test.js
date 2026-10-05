@@ -264,3 +264,39 @@ describe('time muito desfalcado', () => {
     expect(r.placar.fora).toBeGreaterThan(r.placar.casa);
   });
 });
+
+describe('correções da revisão final', () => {
+  it('time com elenco x computador de mesma nota fica equilibrado', () => {
+    const rng = criarRng(123);
+    const N = 10000;
+    let v = 0, d = 0;
+    for (let i = 0; i < N; i++) {
+      const r = simularPartida({ casa: timeComElenco('A', 80), fora: timeCpu('B', 80), neutro: true }, rng);
+      if (r.placar.casa > r.placar.fora) v++;
+      else if (r.placar.casa < r.placar.fora) d++;
+    }
+    expect(Math.abs(v - d) / N).toBeLessThan(0.02);
+  });
+
+  it('intervalo automático coloca o goleiro reserva quando o titular saiu', () => {
+    const e = simularPrimeiroTempo(
+      iniciarPartida({ casa: timeComElenco('A'), fora: timeCpu('B', 80) }), criarRng(2));
+    e.casa.escalacao = e.casa.escalacao.filter((x) => x.vaga !== 'GOL'); // goleiro expulso
+    e.casa.desfalques += 1;
+    const e2 = intervaloAutomatico(e, 'casa');
+    const gol = e2.casa.escalacao.find((x) => x.vaga === 'GOL');
+    expect(gol?.jogador.id).toBe('Ab0'); // reserva de posição GOL
+    expect(e2.casa.escalacao).toHaveLength(10);
+  });
+});
+
+describe('goleiro sem reserva de posição', () => {
+  it('sem goleiro no banco, um jogador de linha vai para o gol', () => {
+    const e = simularPrimeiroTempo(
+      iniciarPartida({ casa: timeComElenco('A'), fora: timeCpu('B', 80) }), criarRng(2));
+    e.casa.escalacao = e.casa.escalacao.filter((x) => x.vaga !== 'GOL');
+    e.casa.banco = e.casa.banco.filter((j) => j.pos !== 'GOL');
+    const e2 = intervaloAutomatico(e, 'casa');
+    expect(e2.casa.escalacao.filter((x) => x.vaga === 'GOL')).toHaveLength(1);
+  });
+});
