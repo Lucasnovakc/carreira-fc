@@ -17,7 +17,7 @@ export function vagasDaFormacao(id) {
 export const disponivel = (j) => !j.fora && !j.suspenso;
 
 export function novoJogadorDoElenco(jogadorBase) {
-  return { ...jogadorBase, fora: 0, suspenso: 0 };
+  return { ...jogadorBase, ovrBase: jogadorBase.ovr, fora: 0, suspenso: 0 };
 }
 
 // Escolhe, vaga a vaga (goleiro primeiro), o melhor jogador ainda livre. Vagas sem candidato ficam null.

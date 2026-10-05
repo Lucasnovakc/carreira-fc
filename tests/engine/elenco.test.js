@@ -87,3 +87,9 @@ describe('forcaMediaDoElenco', () => {
     expect(forcaMediaDoElenco(elenco433())).toBe(80);
   });
 });
+
+describe('ovrBase', () => {
+  it('jogador que entra no elenco guarda o overall de entrada', () => {
+    expect(novoJogadorDoElenco({ id: 'z', nome: 'z', pos: 'CA', ovr: 81, idade: 20 }).ovrBase).toBe(81);
+  });
+});
