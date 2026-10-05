@@ -138,3 +138,11 @@ export function artilheiroDaHistoria(carreira) {
   lista.sort((a, b) => b.gols - a.gols);
   return lista[0] ?? null;
 }
+
+// Rótulo da evolução de um jogador no fim da temporada; no modo olheiro não revela o overall.
+export function rotuloEvolucao({ ovrAntes, ovrDepois, aposentou }, olheiro) {
+  if (aposentou) return { classe: 'muted', texto: 'pendurou as chuteiras' };
+  if (ovrDepois > ovrAntes) return { classe: 'evolucao-sobe', texto: olheiro ? '↑ evoluiu' : `↑ ${ovrDepois}` };
+  if (ovrDepois < ovrAntes) return { classe: 'evolucao-cai', texto: olheiro ? '↓ caiu' : `↓ ${ovrDepois}` };
+  return { classe: 'muted', texto: olheiro ? '= estável' : `= ${ovrDepois}` };
+}

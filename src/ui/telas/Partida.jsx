@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import formacoes from '../../data/formacoes.json';
-import { iniciarPartida, simularPrimeiroTempo, aplicarIntervalo, simularSegundoTempo, simularProrrogacao, CONST } from '../../engine/partida.js';
+import {
+  iniciarPartida, simularPrimeiroTempo, aplicarIntervalo, reporGoleiro, simularSegundoTempo, simularProrrogacao, CONST,
+} from '../../engine/partida.js';
 import { setoresDoLado } from '../../engine/forca.js';
 import { disputarPenaltis } from '../../engine/penaltis.js';
 import { ladosDoJogo, rngDaPartida, precisaDePenaltis, jogarData } from '../../engine/carreira.js';
@@ -88,7 +90,7 @@ function Intervalo({ estado, lado, olheiro, onComecar }) {
 }
 
 export function Partida({ info, onFechar }) {
-  const { carreira, dados, executar } = useCarreira();
+  const { carreira, dados, executar, erro } = useCarreira();
   const eu = carreira.config.clubeId;
   const { jogo, compId } = info;
   const lado = jogo.casa === eu ? 'casa' : 'fora';
@@ -153,7 +155,8 @@ export function Partida({ info, onFechar }) {
 
   const comecarSegundo = (escolhas) => {
     try {
-      const e = aplicarIntervalo(estado, lado, escolhas);
+      // como no jogo simulado: se ninguém ficou no gol, o goleiro reserva (ou o mais apto) assume
+      const e = reporGoleiro(aplicarIntervalo(estado, lado, escolhas), lado);
       setEstado(simularSegundoTempo(e, rng));
       setFracao(0);
       setPeriodo('segundo');
@@ -232,6 +235,7 @@ export function Partida({ info, onFechar }) {
             </div>
             <div style={{ height: 10 }} />
             <button className="botao primario" onClick={concluir}>Continuar</button>
+            {erro && <button className="botao" style={{ marginTop: 8 }} onClick={onFechar}>Voltar ao painel (o jogo não foi registrado)</button>}
           </div>
         )}
 

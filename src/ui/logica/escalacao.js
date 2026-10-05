@@ -30,7 +30,8 @@ export function reorganizar(jogadores, vagas) {
 }
 
 // Altura (em % do campo, 0 = ataque no topo) e lado preferido de cada posição.
-const ALTURA = { GOL: 90, ZAG: 72, LD: 68, LE: 68, VOL: 56, MC: 46, MEI: 34, PD: 20, PE: 20, CA: 11 };
+// Defesa numa linha só e ataque numa linha só (laterais e pontas nas extremidades): sem sobreposição em 360 px.
+const ALTURA = { GOL: 91, ZAG: 76, LD: 76, LE: 76, VOL: 60, MC: 47, MEI: 32, PD: 14, PE: 14, CA: 14 };
 const LADO = { LE: -1, PE: -1, LD: 1, PD: 1 };
 
 // [{ x, y }] em % para cada vaga, espalhando quem divide a mesma linha.

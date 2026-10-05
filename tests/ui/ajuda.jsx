@@ -13,7 +13,7 @@ export function montar(inicial = null) {
   return render(<CarreiraProvider dados={dados} inicial={inicial}><App /></CarreiraProvider>);
 }
 
-// Escolhe o Flamengo e completa o draft pela tela: sempre o 1º jogador, na 1ª vaga livre ou no banco.
+// Escolhe o Flamengo e completa o draft pela tela: sempre o 1º jogador, na 1ª vaga livre ou no banco, confirmando.
 export async function fazerDraft() {
   await clicar(screen.getByText('Flamengo'));
   await clicar(screen.getByText('Bora girar a roleta!'));
@@ -25,5 +25,6 @@ export async function fazerDraft() {
     const vagaLivre = botoes().find((b) => /vazia$/.test(b.getAttribute('aria-label') ?? ''));
     if (vagaLivre) await clicar(vagaLivre);
     else await clicar(botoes().find((b) => /no banco$/.test(b.textContent)));
+    await clicar(screen.getByText('Confirmar'));
   }
 }

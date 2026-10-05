@@ -3,7 +3,7 @@ import { girarTransferencia, aceitarTransferencia, recusarTransferencia, conclui
 import { TAMANHO_ELENCO } from '../../engine/elenco.js';
 import { useCarreira } from '../estado/CarreiraContext.jsx';
 import { Roleta } from '../componentes/Roleta.jsx';
-import { nomeCompeticao, competicoesDaProxima, ORDEM_COMPETICOES } from '../logica/temporada.js';
+import { nomeCompeticao, competicoesDaProxima, ORDEM_COMPETICOES, rotuloEvolucao } from '../logica/temporada.js';
 
 const FICHA = { boa: '🟢 Boa', media: '🟡 Média', ruim: '🔴 Ruim', reposicao: '⚪ Reposição' };
 
@@ -11,6 +11,7 @@ function Resumo({ onSeguir }) {
   const { carreira, dados } = useCarreira();
   const h = carreira.historico.at(-1);
   const env = carreira.transferencias?.envelhecimento ?? [];
+  const olheiro = carreira.config.dificuldade === 'olheiro';
   return (
     <>
       <h1 className="tela-titulo">Temporada {h.temporada} de {carreira.config.duracao}</h1>
@@ -38,11 +39,7 @@ function Resumo({ onSeguir }) {
             {env.map((e) => (
               <div key={e.id} className="linha">
                 <span className="grow">{e.nome} <span className="muted">· {e.idade} anos</span></span>
-                {e.aposentou
-                  ? <span className="muted">pendurou as chuteiras</span>
-                  : e.ovrDepois > e.ovrAntes ? <span className="evolucao-sobe">↑ {e.ovrDepois}</span>
-                    : e.ovrDepois < e.ovrAntes ? <span className="evolucao-cai">↓ {e.ovrDepois}</span>
-                      : <span className="muted">= {e.ovrDepois}</span>}
+                {(() => { const r = rotuloEvolucao(e, olheiro); return <span className={r.classe}>{r.texto}</span>; })()}
               </div>
             ))}
           </div>

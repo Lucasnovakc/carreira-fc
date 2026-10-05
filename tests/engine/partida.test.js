@@ -3,7 +3,7 @@ import formacoes from '../../src/data/formacoes.json';
 import { criarRng } from '../../src/engine/rng.js';
 import {
   CONST, criarLado, iniciarPartida, simularPrimeiroTempo, aplicarIntervalo,
-  intervaloAutomatico, simularSegundoTempo, simularProrrogacao, simularPartida,
+  intervaloAutomatico, simularSegundoTempo, simularProrrogacao, simularPartida, reporGoleiro,
 } from '../../src/engine/partida.js';
 
 const VAGAS_433 = formacoes.find((f) => f.id === '4-3-3').vagas;
@@ -298,5 +298,19 @@ describe('goleiro sem reserva de posição', () => {
     e.casa.banco = e.casa.banco.filter((j) => j.pos !== 'GOL');
     const e2 = intervaloAutomatico(e, 'casa');
     expect(e2.casa.escalacao.filter((x) => x.vaga === 'GOL')).toHaveLength(1);
+  });
+});
+
+describe('reporGoleiro (usado também no intervalo ao vivo)', () => {
+  it('sem ninguém no gol, o goleiro reserva entra no gol', () => {
+    const e = simularPrimeiroTempo(iniciarPartida({ casa: timeComElenco('A'), fora: timeCpu('B', 80) }), criarRng(2));
+    e.casa.escalacao = e.casa.escalacao.filter((x) => x.vaga !== 'GOL');
+    const r = reporGoleiro(e, 'casa');
+    expect(r.casa.escalacao.find((x) => x.vaga === 'GOL').jogador.id).toBe('Ab0');
+  });
+
+  it('com goleiro em campo, não muda nada', () => {
+    const e = simularPrimeiroTempo(iniciarPartida({ casa: timeComElenco('A'), fora: timeCpu('B', 80) }), criarRng(2));
+    expect(reporGoleiro(e, 'casa')).toBe(e);
   });
 });

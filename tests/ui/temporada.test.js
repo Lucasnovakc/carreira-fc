@@ -3,7 +3,7 @@ import { criarDados } from '../fixtures/dados.js';
 import { novaCarreira, girarDraft, escolherNoDraft, jogarData, proximaData } from '../../src/engine/carreira.js';
 import {
   nomeCompeticao, infoProximoJogo, resultadoDoUsuario, ultimosResultados, linhasDoCalendario,
-  simularAteImportante, totalTitulos, competicoesDaProxima, salaDeTrofeus, artilheiroDaHistoria,
+  simularAteImportante, totalTitulos, competicoesDaProxima, salaDeTrofeus, artilheiroDaHistoria, rotuloEvolucao,
 } from '../../src/ui/logica/temporada.js';
 
 const dados = criarDados();
@@ -114,5 +114,23 @@ describe('troféus e próxima temporada', () => {
   it('artilheiro da história é quem tem mais gols na carreira', () => {
     expect(artilheiroDaHistoria({ golsNaCarreira: { a: { nome: 'A', gols: 3 }, b: { nome: 'B', gols: 9 } } })).toEqual({ id: 'b', nome: 'B', gols: 9 });
     expect(artilheiroDaHistoria({ golsNaCarreira: {} })).toBeNull();
+  });
+});
+
+describe('rotuloEvolucao', () => {
+  it('clássico mostra a seta e o overall novo', () => {
+    expect(rotuloEvolucao({ ovrAntes: 80, ovrDepois: 82, aposentou: false }, false)).toEqual({ classe: 'evolucao-sobe', texto: '↑ 82' });
+    expect(rotuloEvolucao({ ovrAntes: 80, ovrDepois: 78, aposentou: false }, false)).toEqual({ classe: 'evolucao-cai', texto: '↓ 78' });
+    expect(rotuloEvolucao({ ovrAntes: 80, ovrDepois: 80, aposentou: false }, false)).toEqual({ classe: 'muted', texto: '= 80' });
+  });
+
+  it('olheiro não revela números', () => {
+    expect(rotuloEvolucao({ ovrAntes: 80, ovrDepois: 82, aposentou: false }, true).texto).toBe('↑ evoluiu');
+    expect(rotuloEvolucao({ ovrAntes: 80, ovrDepois: 78, aposentou: false }, true).texto).toBe('↓ caiu');
+    expect(rotuloEvolucao({ ovrAntes: 80, ovrDepois: 80, aposentou: false }, true).texto).toBe('= estável');
+  });
+
+  it('aposentado', () => {
+    expect(rotuloEvolucao({ ovrAntes: 80, ovrDepois: 76, aposentou: true }, false)).toEqual({ classe: 'muted', texto: 'pendurou as chuteiras' });
   });
 });

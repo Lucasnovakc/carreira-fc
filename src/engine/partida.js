@@ -178,7 +178,7 @@ export function aplicarIntervalo(estadoAnterior, chave, { trocas = [], escalacao
 
 // Se o time ficou sem ninguém no gol: entra o goleiro reserva no lugar do jogador de linha mais fraco,
 // ou, sem goleiro no banco, o jogador de linha que renderia mais no gol muda de vaga.
-function reporGoleiro(estado, chave) {
+export function reporGoleiro(estado, chave) {
   const lado = estado[chave];
   if (!lado.escalacao.length || lado.escalacao.some((e) => e.vaga === 'GOL')) return estado;
   const reserva = lado.trocas < CONST.MAX_TROCAS ? melhorReserva(lado, 'GOL') : null;

@@ -61,3 +61,21 @@ describe('posicoesNoCampo', () => {
     expect(new Set(chaves).size).toBe(11);
   });
 });
+
+describe('vagas não se sobrepõem num celular de 360 px', () => {
+  // campo útil ~328 x 437 px (aspect 3/4); botão da vaga 58 x 46 px
+  const LARGURA = 328, ALTURA = 437, VAGA_L = 58, VAGA_A = 46;
+  it.each(formacoes.map((f) => f.id))('%s', (id) => {
+    const vagas = formacoes.find((f) => f.id === id).vagas;
+    const p = posicoesNoCampo(vagas);
+    const choques = [];
+    for (let a = 0; a < p.length; a++) {
+      for (let b = a + 1; b < p.length; b++) {
+        const dx = Math.abs(p[a].x - p[b].x) / 100 * LARGURA;
+        const dy = Math.abs(p[a].y - p[b].y) / 100 * ALTURA;
+        if (dx < VAGA_L && dy < VAGA_A) choques.push(`${vagas[a]}/${vagas[b]}`);
+      }
+    }
+    expect(choques).toEqual([]);
+  });
+});
