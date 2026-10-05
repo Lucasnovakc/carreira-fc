@@ -10,6 +10,7 @@ import {
 } from '../../src/engine/carreira.js';
 import { criarCopaDoBrasil, criarEstadual } from '../../src/engine/competicoes.js';
 import { criarRng } from '../../src/engine/rng.js';
+import { ovrEfetivo } from '../../src/engine/posicoes.js';
 import { ordenarTabela } from '../../src/engine/liga.js';
 import { ajustePorPosicao } from '../../src/engine/evolucaoClubes.js';
 
@@ -269,11 +270,37 @@ describe('transferências', () => {
     const novo = c.transferencias.atual.opcoes[0].id;
     const sai = c.elenco.titulares[3];
     expect(() => aceitarTransferencia(c, novo)).toThrow();
+    const antes = c;
     c = aceitarTransferencia(c, novo, sai);
-    expect(c.elenco.titulares[3]).toBe(novo);
+    // a vaga liberada (ZAG no 4-3-3) vai para quem melhor encaixa nela, entre o novo e os reservas
+    const outrosTitulares = new Set(antes.elenco.titulares.filter((id, i) => i !== 3));
+    const candidatos = Object.values(c.elenco.jogadores).filter((j) => !outrosTitulares.has(j.id));
+    const melhor = Math.max(...candidatos.map((j) => ovrEfetivo(j, 'ZAG')));
+    expect(ovrEfetivo(c.elenco.jogadores[c.elenco.titulares[3]], 'ZAG')).toBe(melhor);
     expect(c.elenco.jogadores[sai]).toBeUndefined();
     expect(c.exJogadores).toContain(sai);
     expect(c.transferencias.fila).toEqual([]);
+  });
+
+  it('vendendo o goleiro titular, o goleiro reserva assume o gol (não o atacante novo)', () => {
+    let c = ateJanela();
+    c = structuredClone(c);
+    // garante elenco cheio com um goleiro reserva conhecido
+    const golTitular = c.elenco.titulares[0];
+    const reservaGol = Object.values(c.elenco.jogadores).find((j) => j.pos === 'GOL' && j.id !== golTitular);
+    if (!reservaGol) {
+      const extra = Object.keys(c.elenco.jogadores).find((id) => !c.elenco.titulares.includes(id));
+      delete c.elenco.jogadores[extra];
+      c.elenco.jogadores['g:reserva'] = { id: 'g:reserva', nome: 'Goleiro Reserva', pos: 'GOL', ovr: 70, ovrBase: 70, idade: 25, origem: 'x', fora: 0, suspenso: 0 };
+    }
+    while (Object.keys(c.elenco.jogadores).length < 15) {
+      const id = `pad:${Object.keys(c.elenco.jogadores).length}`;
+      c.elenco.jogadores[id] = { id, nome: id, pos: 'ZAG', ovr: 60, ovrBase: 60, idade: 25, origem: 'x', fora: 0, suspenso: 0 };
+    }
+    const atacante = { id: 'novo:ca', nome: 'Atacante Novo', pos: 'CA', ovr: 90, idade: 24, origem: 'x' };
+    c.transferencias = { ...c.transferencias, fila: [{ tipo: 'boa', obrigatoria: false }], atual: { elencoId: 'x', opcoes: [atacante] } };
+    c = aceitarTransferencia(c, 'novo:ca', golTitular);
+    expect(c.elenco.jogadores[c.elenco.titulares[0]].pos).toBe('GOL');
   });
 
   it('roleta obrigatória não pode ser recusada; opcional pode', () => {

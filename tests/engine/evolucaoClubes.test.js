@@ -6,7 +6,7 @@ const n = (v) => ({ gol: v, def: v, mei: v, ata: v });
 const media = (x) => (x.gol + x.def + x.mei + x.ata) / 4;
 
 describe('ajustePorPosicao', () => {
-  it.each([[1, 3], [2, 2], [4, 2], [5, 1], [10, 1], [11, 0], [16, 0], [17, -1], [20, -1]])('%iº: %i', (p, a) => {
+  it.each([[1, 2], [2, 1], [4, 1], [5, 0], [10, 0], [11, 0], [16, 0], [17, -1], [20, -1]])('%iº: %i', (p, a) => {
     expect(ajustePorPosicao(p)).toBe(a);
   });
 });
@@ -24,7 +24,7 @@ describe('evoluirClubes', () => {
       somaUltimo += media(r.c20) - 75;
       somaMeio += media(r.c13) - 75;
     }
-    expect(somaCampeao / 400).toBeCloseTo(3, 0);
+    expect(somaCampeao / 400).toBeCloseTo(2, 0);
     expect(somaUltimo / 400).toBeCloseTo(-1, 0);
     expect(Math.abs(somaMeio / 400)).toBeLessThan(0.5);
   });

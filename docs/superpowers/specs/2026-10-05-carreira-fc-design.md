@@ -116,8 +116,15 @@ Temporada 1: só Estadual + Brasileirão. Os clubes do computador seguem as mesm
 ### 5.6 Calendário
 Lista ordenada de datas por temporada: bloco do estadual, depois as 38 rodadas do Brasileirão com datas de meio de semana para Copa do Brasil e continental intercaladas. Jogos que não envolvem o usuário são simulados instantaneamente em segundo plano.
 
-### 5.7 Oscilação dos adversários
-No início de cada temporada, cada nota de cada clube do computador varia ±3 (limitada a 50–90).
+### 5.7 Evolução dos adversários
+No fim de cada temporada, cada nota de cada clube do computador muda assim (limitada a 50–90):
+`nova = atual + 0,3 × (original − atual) + ajuste + oscilação(±2)`, arredondada.
+- **Ajuste pelo Brasileirão:** campeão +2 · 2º–4º +1 · 5º–16º 0 · 17º–20º −1 (quase soma zero, para a liga não inflar).
+- **+1 por título** de Copa do Brasil, Libertadores ou Sul-Americana (vale para estrangeiros).
+- **Puxada de 30%** para a nota original mantém a identidade do clube.
+- O clube do usuário não usa notas (joga com o elenco).
+
+**Calibração (2026-10-05):** as notas iniciais da Série A ficaram +5 acima da estimativa de 2026 (Flamengo/Palmeiras ~85, Remo/Chapecoense ~72). Com um "draft esperto" e trocas sensatas, 20 carreiras de 10 temporadas deram em média 1,5 Brasileirão por carreira e G4 em 55% das temporadas (meta: 1–3 títulos, G4 ~60%).
 
 ### 5.8 Jogo importante
 Qualquer mata-mata, finais, clássicos do clube do usuário e as 5 últimas rodadas do Brasileirão.
@@ -128,13 +135,13 @@ Qualquer mata-mata, finais, clássicos do clube do usuário e as 5 últimas roda
 
 | Idade (após o aniversário) | Δ overall |
 |---|---|
-| ≤ 23 | +3 |
+| ≤ 23 | +2 |
 | 24–27 | +1 |
 | 28–31 | 0 |
 | 32–33 | −2 |
 | ≥ 34 | −4 |
 
-Overall limitado a 40–99. Idade inicial = idade do atleta no ano daquele elenco.
+Overall limitado a 40–99. **Teto de evolução:** o jogador não passa de +6 acima do overall com que entrou no elenco (`ovrBase`); a queda por idade não tem teto. Idade inicial = idade do atleta no ano daquele elenco.
 **Aposentadoria:** a partir de 35 anos, 40% de chance por temporada; aos 37, obrigatória. Cada aposentado gera uma roleta de reposição obrigatória (elenco volta a 15).
 
 ### 6.2 Roletas de transferência (pela posição no Brasileirão)

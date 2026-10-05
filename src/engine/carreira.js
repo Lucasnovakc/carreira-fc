@@ -366,7 +366,8 @@ export function aceitarTransferencia(carreira, jogadorId, saiId = null) {
   const c = structuredClone(carreira);
   if (saiId) {
     delete c.elenco.jogadores[saiId];
-    c.elenco.titulares = c.elenco.titulares.map((id) => (id === saiId ? escolhido.id : id));
+    // a vaga fica livre e completarTitulares põe quem melhor encaixa nela (o novo ou um reserva)
+    c.elenco.titulares = c.elenco.titulares.map((id) => (id === saiId ? null : id));
     c.exJogadores.push(saiId);
   }
   c.elenco.jogadores[escolhido.id] = novoJogadorDoElenco(escolhido);

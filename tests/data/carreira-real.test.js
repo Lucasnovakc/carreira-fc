@@ -30,15 +30,22 @@ function janela(c) {
   while (c.transferencias.fila.length) {
     c = girarTransferencia(c, dados);
     if (!c.transferencias.atual) continue;
+    // Como um jogador sensato: troca alguém da mesma posição e nunca fica com menos de 2 goleiros.
     const { obrigatoria } = c.transferencias.fila[0];
-    const cheio = Object.keys(c.elenco.jogadores).length >= 15;
-    const pior = Object.values(c.elenco.jogadores).sort((a, b) => a.ovr - b.ovr)[0];
+    const elenco = Object.values(c.elenco.jogadores);
+    const cheio = elenco.length >= 15;
     const melhor = [...c.transferencias.atual.opcoes].sort((a, b) => b.ovr - a.ovr)[0];
-    if (!obrigatoria && (!cheio || melhor.ovr <= pior.ovr)) {
-      c = cheio ? recusarTransferencia(c) : aceitarTransferencia(c, melhor.id);
+    const mesmaPos = elenco.filter((j) => j.pos === melhor.pos).sort((a, b) => a.ovr - b.ovr);
+    const goleiros = elenco.filter((j) => j.pos === 'GOL').length;
+    const vendiveis = elenco.filter((j) => j.pos !== 'GOL' || goleiros > 2).sort((a, b) => a.ovr - b.ovr);
+    const vale = mesmaPos[0] && mesmaPos[0].ovr < melhor.ovr;
+    if (!obrigatoria) {
+      if (!cheio) c = aceitarTransferencia(c, melhor.id);
+      else c = vale ? aceitarTransferencia(c, melhor.id, mesmaPos[0].id) : recusarTransferencia(c);
       continue;
     }
-    c = aceitarTransferencia(c, melhor.id, cheio ? pior.id : null);
+    const sai = cheio ? (mesmaPos[0] ?? vendiveis[0]).id : null;
+    c = aceitarTransferencia(c, melhor.id, sai);
   }
   return concluirTransferencias(c, dados);
 }
