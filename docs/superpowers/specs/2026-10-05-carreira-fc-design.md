@@ -16,6 +16,9 @@ Jogo web inspirado na mecânica do Boleirou (roleta de elencos históricos + pen
 - Save em nuvem, login, ranking entre amigos (Supabase)
 - Acúmulo de cartões amarelos, rodízio/cansaço entre jogos
 - Expansão de 40 para 100+ elencos na roleta
+- **Modo Lendas**: opção ao criar a carreira para o Brasileirão usar 20 elencos históricos sorteados (com jogadores de nome) como adversários, em vez dos clubes atuais. Depende de ter 80–100+ elencos na base.
+
+Na v1, os elencos históricos existem **só na roleta**; os adversários são sempre os clubes atuais (seção 4.3).
 
 ## 3. Fluxo de telas
 
