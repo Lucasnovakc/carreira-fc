@@ -98,7 +98,7 @@ Estadual do estado do clube escolhido. Formato padrão: 12 clubes, turno único 
 32 clubes (20 da Série A + 12 vindos dos estaduais). Mata-mata ida e volta: 16 avos, oitavas, quartas, semi, final. Empate no agregado → pênaltis (sem gol fora).
 
 ### 5.4 Libertadores e Sul-Americana (mesmo formato)
-32 clubes, 8 grupos de 4 (6 jogos), 2 primeiros avançam. Oitavas, quartas e semi ida e volta; **final em jogo único** (campo neutro). Clubes estrangeiros: pool de ~40 sul-americanos; os mais fortes vão à Libertadores, os demais à Sul-Americana.
+32 clubes, 8 grupos de 4 (6 jogos), 2 primeiros avançam. Oitavas, quartas e semi ida e volta; **final em jogo único** (campo neutro). Clubes estrangeiros: pool de **56** sul-americanos (no pior caso a Libertadores usa 28 e a Sul-Americana 26); os mais fortes completam a Libertadores, os seguintes a Sul-Americana. As duas competições rodam todo ano a partir da temporada 2 (com os brasileiros do computador), e o usuário disputa no máximo uma. Semifinal do estadual em jogo único vai direto aos pênaltis; só a final continental tem prorrogação.
 
 ### 5.5 Regras de classificação (para a temporada seguinte)
 
@@ -153,14 +153,16 @@ Overall limitado a 40–99. Idade inicial = idade do atleta no ano daquele elenc
 - **Média (título estadual):** igual à boa, opcional, mas só lista atletas com overall ≤ 85.
 - **Ruim:** sorteia apenas atletas com overall ≤ 68 de qualquer elenco da base; o usuário é obrigado a aceitar e escolhe quem sai.
 - **Reposição (aposentadoria):** igual à boa, mas obrigatória.
-- Atleta já presente no elenco do usuário não pode ser sorteado de novo.
+- Atleta já presente no elenco do usuário, ou que já saiu dele (vendido ou aposentado), não pode ser sorteado de novo.
+- Na última temporada da carreira não há envelhecimento nem janela: a carreira termina.
+- Lesões e suspensões zeram no início de cada temporada.
 
 ## 7. Dados (JSON editáveis em `src/data/`)
 
 - `elencos.json` — 40 elencos históricos da roleta: `{ id, clube, sigla, ano, cores, jogadores: [{ nome, pos, ovr, idade }] }`, ~20 jogadores por elenco. Gerados pelo Claude a partir de conhecimento próprio e revisados pelo autor (fontes de conferência: ogol.com.br, Wikipedia, Transfermarkt).
 - `clubes.json` — clubes brasileiros atuais: `{ id, nome, sigla, estado, cores, gol, def, mei, ata, serieA, classicos: [ids] }`.
 - `estaduais.json` — `{ estado: { nome, clubes: [ids] } }`.
-- `estrangeiros.json` — ~40 clubes sul-americanos com as 4 notas e país.
+- `estrangeiros.json` — 56 clubes sul-americanos com as 4 notas e país.
 - `formacoes.json` — formações (4-3-3, 4-4-2, 4-2-3-1, 4-2-4, 4-2-2-2, 4-5-1, 4-3-1-2) com as 11 vagas.
 
 ## 8. Arquitetura
