@@ -17,7 +17,7 @@ Dar ao motor já pronto (Planos 1–3 + equilíbrio) uma interface jogável no c
 
 ## 3. Arquitetura
 
-- **React + Vite** (já no projeto), **CSS próprio** com variáveis (sem Tailwind, sem roteador).
+- **React + Vite** (a instalar neste plano — hoje o projeto só tem Vitest), **CSS próprio** com variáveis (sem Tailwind, sem roteador).
 - **Telas guiadas pela `fase`** da carreira: `inicio` (sem carreira) → `draft` → `temporada` → `transferencias` → `temporada` … → `fim`. O componente raiz escolhe a tela pela fase; não há como abrir tela fora de hora.
 - **Estado:** um `useReducer`/contexto (`CarreiraProvider`) guarda `carreira` e expõe ações que chamam as funções puras do motor (`girarDraft`, `jogarData`, …). `dados` vem de `src/data/index.js` e nunca é salvo.
 - **Salvamento automático:** depois de cada ação, `carreira` é gravada no `localStorage` (chave `carreira-fc:save`), dentro de `try/catch`; ao abrir, carrega se existir. Interface `storage` (`salvar`, `carregar`, `apagar`) para o Plano 5 trocar/estender.
