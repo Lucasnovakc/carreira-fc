@@ -431,3 +431,22 @@ describe('correções da revisão: semente e envelhecimento', () => {
     expect(env.filter((e) => e.aposentou)).toHaveLength(c.transferencias.aposentados.length);
   });
 });
+
+describe('gols na carreira', () => {
+  it('soma os gols de cada jogador temporada após temporada', () => {
+    const c1 = jogarTemporada(draftCompleto(nova()));
+    const soma = (o) => Object.values(o).reduce((s, x) => s + x, 0);
+    const golsT1 = soma(c1.temporadaAtual.gols);
+    expect(Object.values(c1.golsNaCarreira).reduce((s, x) => s + x.gols, 0)).toBe(golsT1);
+    for (const [id, g] of Object.entries(c1.temporadaAtual.gols)) {
+      expect(c1.golsNaCarreira[id]).toEqual({ nome: c1.elenco.jogadores[id]?.nome ?? expect.any(String), gols: g });
+    }
+    const c2 = jogarTemporada(resolverJanela(c1));
+    const total = Object.values(c2.golsNaCarreira).reduce((s, x) => s + x.gols, 0);
+    expect(total).toBe(golsT1 + soma(c2.temporadaAtual.gols));
+  });
+
+  it('carreira nova começa sem gols', () => {
+    expect(nova().golsNaCarreira).toEqual({});
+  });
+});

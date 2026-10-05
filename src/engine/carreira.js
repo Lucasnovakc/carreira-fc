@@ -63,6 +63,7 @@ export function novaCarreira({ dados, clubeId, duracao = 10, dificuldade = 'clas
     notas,
     vagas: null,
     exJogadores: [],
+    golsNaCarreira: {},
     historico: [],
     temporadaAtual: null,
     transferencias: null,
@@ -298,6 +299,10 @@ function encerrarTemporada(c, dados, rng) {
   for (const [id, comp] of Object.entries(comps)) {
     const r = campanha(comp, eu);
     if (r) campanhas[id] = r;
+  }
+  for (const [id, gols] of Object.entries(t.gols)) {
+    const antes = c.golsNaCarreira[id];
+    c.golsNaCarreira[id] = { nome: c.elenco.jogadores[id]?.nome ?? antes?.nome ?? id, gols: (antes?.gols ?? 0) + gols };
   }
   c.historico.push({
     temporada: c.temporada, titulos, posicaoBrasileirao: posicao, campanhas,
