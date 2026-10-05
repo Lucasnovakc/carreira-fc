@@ -4,11 +4,8 @@ import { Inicio } from './telas/Inicio.jsx';
 import { NovaCarreira } from './telas/NovaCarreira.jsx';
 import { Draft } from './telas/Draft.jsx';
 import { Painel } from './telas/Painel.jsx';
-
-function Andamento() {
-  const { carreira } = useCarreira();
-  return <div className="app"><p className="topo">Temporada {carreira.temporada} de {carreira.config.duracao}</p></div>;
-}
+import { FimTemporada } from './telas/FimTemporada.jsx';
+import { FimCarreira } from './telas/FimCarreira.jsx';
 
 // A tela é escolhida pela fase da carreira; não há como abrir uma tela fora de hora.
 export function App() {
@@ -23,7 +20,8 @@ export function App() {
   else if (mostrarInicio) tela = <Inicio onContinuar={() => setEntrou(true)} />;
   else if (carreira.fase === 'draft') tela = <Draft />;
   else if (carreira.fase === 'temporada') tela = <Painel />;
-  else tela = <Andamento />;
+  else if (carreira.fase === 'transferencias') tela = <FimTemporada />;
+  else tela = <FimCarreira />;
 
   return (
     <>
