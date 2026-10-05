@@ -16,7 +16,8 @@ export const NOMES = {
 };
 
 function fase(nome, { idaEVolta = true, neutro = false, prorrogacao = false, sorteio = 'ordem' } = {}) {
-  return { nome, idaEVolta, neutro, prorrogacao, sorteio, pares: null, idas: [], vencedores: [] };
+  // voltas: resultados da volta (ou do jogo único); penaltis[i]: { casa, fora } da disputa do par i, ou null
+  return { nome, idaEVolta, neutro, prorrogacao, sorteio, pares: null, idas: [], voltas: [], penaltis: [], vencedores: [] };
 }
 
 function etapasDasFases(fases) {
@@ -114,8 +115,23 @@ function fecharFase(comp, i, rng) {
   prox.pares = prox.sorteio === 'chave' ? sortearChave(f.vencedores, rng) : emparelhar(f.vencedores);
 }
 
+function decidir(f, perna, i, resultado) {
+  return perna === 'volta' ? decidirIdaVolta(f.idas[i], resultado) : decidirJogoUnico(resultado);
+}
+
+// Se este resultado, na etapa atual, deixa o confronto empatado e manda para os pênaltis.
+export function confrontoVaiAosPenaltis(comp, resultado) {
+  const etapa = comp.etapas[comp.proxima];
+  if (!etapa || etapa.tipo !== 'fase' || etapa.perna === 'ida') return false;
+  const f = comp.fases[etapa.fase];
+  const i = jogosDaEtapa(comp).findIndex((j) => j.casa === resultado.casa && j.fora === resultado.fora);
+  if (i < 0) return false;
+  return decidir(f, etapa.perna, i, resultado).precisaPenaltis;
+}
+
 // resultados: [{ casa, fora, golsCasa, golsFora }] na mesma ordem de jogosDaEtapa.
-// penaltis(casaId, foraId) -> id do vencedor; chamado só quando o confronto precisa de pênaltis.
+// penaltis(casaId, foraId) -> id do vencedor, ou { vencedor, casa, fora } com o placar da disputa;
+// chamado só quando o confronto precisa de pênaltis.
 export function registrarEtapa(compAnterior, resultados, { penaltis, rng }) {
   const comp = structuredClone(compAnterior);
   const etapa = comp.etapas[comp.proxima];
@@ -137,9 +153,15 @@ export function registrarEtapa(compAnterior, resultados, { penaltis, rng }) {
     if (etapa.perna === 'ida') {
       f.idas = resultados;
     } else {
+      f.voltas = resultados;
+      f.penaltis = resultados.map(() => null);
       f.vencedores = resultados.map((r, i) => {
-        const d = etapa.perna === 'volta' ? decidirIdaVolta(f.idas[i], r) : decidirJogoUnico(r);
-        return d.precisaPenaltis ? penaltis(r.casa, r.fora) : d.vencedor;
+        const d = decidir(f, etapa.perna, i, r);
+        if (!d.precisaPenaltis) return d.vencedor;
+        const p = penaltis(r.casa, r.fora);
+        if (typeof p === 'string') return p;
+        f.penaltis[i] = { casa: p.casa, fora: p.fora };
+        return p.vencedor;
       });
       fecharFase(comp, etapa.fase, rng);
     }

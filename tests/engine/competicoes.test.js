@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { criarRng } from '../../src/engine/rng.js';
 import {
   criarBrasileirao, criarEstadual, criarCopaDoBrasil, criarContinental,
-  jogosDaEtapa, registrarEtapa, terminou, campanha,
+  jogosDaEtapa, registrarEtapa, terminou, campanha, confrontoVaiAosPenaltis,
 } from '../../src/engine/competicoes.js';
 
 const ids = (n, p = 't') => Array.from({ length: n }, (_, i) => `${p}${String(i).padStart(2, '0')}`);
@@ -164,5 +164,35 @@ describe('campanha', () => {
     const copia = structuredClone(comp);
     registrarEtapa(comp, jogosDaEtapa(comp).map((j) => ({ casa: j.casa, fora: j.fora, golsCasa: 1, golsFora: 0 })), { penaltis: (a) => a, rng });
     expect(comp).toEqual(copia);
+  });
+});
+
+describe('correções da revisão: histórico das chaves', () => {
+  it('guarda placares da volta e o placar dos pênaltis de cada confronto', () => {
+    const rng = criarRng(13);
+    let c = criarCopaDoBrasil(ids(32), rng);
+    c = registrarEtapa(c, jogosDaEtapa(c).map((j) => ({ casa: j.casa, fora: j.fora, golsCasa: 1, golsFora: 0 })), { penaltis: (a) => a, rng });
+    const volta = jogosDaEtapa(c).map((j) => ({ casa: j.casa, fora: j.fora, golsCasa: 1, golsFora: 0 }));
+    c = registrarEtapa(c, volta, { penaltis: (a, b) => ({ vencedor: b, casa: 3, fora: 4 }), rng });
+    const f = c.fases[0];
+    expect(f.voltas).toEqual(volta);
+    expect(f.penaltis[0]).toEqual({ casa: 3, fora: 4 });
+    expect(f.vencedores[0]).toBe(volta[0].fora);
+  });
+
+  it('confrontoVaiAosPenaltis olha o agregado da ida', () => {
+    const rng = criarRng(14);
+    let c = criarCopaDoBrasil(ids(32), rng);
+    const [ida] = jogosDaEtapa(c);
+    expect(confrontoVaiAosPenaltis(c, { casa: ida.casa, fora: ida.fora, golsCasa: 0, golsFora: 0 })).toBe(false);
+    c = registrarEtapa(c, jogosDaEtapa(c).map((j) => ({ casa: j.casa, fora: j.fora, golsCasa: 2, golsFora: 1 })), { penaltis: (a) => a, rng });
+    expect(confrontoVaiAosPenaltis(c, { casa: ida.fora, fora: ida.casa, golsCasa: 1, golsFora: 0 })).toBe(true);
+    expect(confrontoVaiAosPenaltis(c, { casa: ida.fora, fora: ida.casa, golsCasa: 0, golsFora: 0 })).toBe(false);
+  });
+
+  it('rodada de liga nunca vai aos pênaltis', () => {
+    const c = criarBrasileirao(ids(20));
+    const [j] = jogosDaEtapa(c);
+    expect(confrontoVaiAosPenaltis(c, { ...j, golsCasa: 1, golsFora: 1 })).toBe(false);
   });
 });

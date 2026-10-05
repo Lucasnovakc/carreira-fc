@@ -6,7 +6,10 @@ import {
 import {
   novaCarreira, girarDraft, usarCuringa, escolherNoDraft, proximaData, jogarData, ladosDoJogo, rngDaPartida,
   girarTransferencia, aceitarTransferencia, recusarTransferencia, concluirTransferencias, definirTatica, CURINGAS,
+  validarPartidaUsuario, precisaDePenaltis,
 } from '../../src/engine/carreira.js';
+import { criarCopaDoBrasil, criarEstadual } from '../../src/engine/competicoes.js';
+import { criarRng } from '../../src/engine/rng.js';
 
 const dados = criarDados();
 const nova = (extra = {}) => novaCarreira({ dados, clubeId: 'a0', duracao: 5, semente: 42, ...extra });
@@ -300,5 +303,86 @@ describe('definirTatica', () => {
 
   it('não vale durante o draft', () => {
     expect(() => definirTatica(nova(), { postura: 'ofensiva' })).toThrow();
+  });
+});
+
+describe('correções da revisão: partida ao vivo', () => {
+  const jogo = (extra = {}) => ({ casa: 'a0', fora: 'a1', neutro: false, prorrogacao: false, ...extra });
+  const partida = (extra = {}) => ({ tempo: 2, casa: { id: 'a0' }, fora: { id: 'a1' }, neutro: false, placar: { casa: 1, fora: 1 }, ...extra });
+
+  it('aceita a partida certa', () => {
+    expect(() => validarPartidaUsuario(jogo(), partida())).not.toThrow();
+    expect(() => validarPartidaUsuario(jogo({ neutro: true, prorrogacao: true }), partida({ neutro: true, tempo: 3 }))).not.toThrow();
+    expect(() => validarPartidaUsuario(jogo({ neutro: true, prorrogacao: true }), partida({ neutro: true, placar: { casa: 2, fora: 1 } }))).not.toThrow();
+  });
+
+  it('recusa campo neutro diferente', () => {
+    expect(() => validarPartidaUsuario(jogo({ neutro: true }), partida())).toThrow();
+  });
+
+  it('recusa final empatada sem a prorrogação jogada', () => {
+    expect(() => validarPartidaUsuario(jogo({ neutro: true, prorrogacao: true }), partida({ neutro: true }))).toThrow();
+  });
+
+  it('recusa prorrogação em jogo que não tem', () => {
+    expect(() => validarPartidaUsuario(jogo(), partida({ tempo: 3 }))).toThrow();
+  });
+
+  it('recusa partida ao vivo numa data sem jogo do usuário', () => {
+    let c = draftCompleto(nova());
+    c = structuredClone(c);
+    c.temporadaAtual.competicoes.estadual = criarEstadual(dados.estaduais.BB.clubes); // estadual sem o a0
+    expect(proximaData(c, dados).jogo).toBeNull();
+    expect(() => jogarData(c, dados, { partidaUsuario: partida() })).toThrow();
+  });
+
+  it('pênaltis jogados na tela entram na chave e no registro do jogo', () => {
+    let c = structuredClone(draftCompleto(nova()));
+    const serieA = dados.clubes.filter((x) => x.serieA).map((x) => x.id);
+    const pequenos = dados.clubes.filter((x) => !x.serieA).map((x) => x.id).slice(0, 12);
+    c.temporadaAtual.competicoes.estadual = criarCopaDoBrasil([...serieA, ...pequenos], criarRng(1));
+    const aoVivo = (placarUsuario) => {
+      const { jogo: j } = proximaData(c, dados);
+      const { casa, fora } = ladosDoJogo(c, dados, j);
+      const p = simularSegundoTempo(simularPrimeiroTempo(iniciarPartida({ casa, fora }), rngDaPartida(c)), rngDaPartida(c));
+      p.placar = j.casa === 'a0' ? { casa: placarUsuario, fora: 0 } : { casa: 0, fora: placarUsuario };
+      return { j, p };
+    };
+    const ida = aoVivo(1);
+    expect(precisaDePenaltis(c, 'estadual', { casa: ida.j.casa, fora: ida.j.fora, golsCasa: ida.p.placar.casa, golsFora: ida.p.placar.fora })).toBe(false);
+    c = jogarData(c, dados, { partidaUsuario: ida.p });
+    const volta = aoVivo(0);
+    volta.p.placar = volta.j.casa === 'a0' ? { casa: 0, fora: 1 } : { casa: 1, fora: 0 }; // devolve o 1x0: agregado 1x1
+    const res = { casa: volta.j.casa, fora: volta.j.fora, golsCasa: volta.p.placar.casa, golsFora: volta.p.placar.fora };
+    expect(precisaDePenaltis(c, 'estadual', res)).toBe(true);
+    const disputa = { casa: 5, fora: 4, vencedor: 'casa', cobrancas: [{ lado: 'casa', convertido: true }] };
+    c = jogarData(c, dados, { partidaUsuario: volta.p, penaltisUsuario: disputa });
+    expect(c.temporadaAtual.jogos.at(-1).penaltis).toEqual({ casa: 5, fora: 4, cobrancas: disputa.cobrancas });
+    const f = c.temporadaAtual.competicoes.estadual.fases[0];
+    const i = f.pares.findIndex((p) => p.includes('a0'));
+    expect(f.penaltis[i]).toEqual({ casa: 5, fora: 4 });
+    expect(f.vencedores[i]).toBe(volta.j.casa);
+  });
+
+  it('pênaltis da tela com vencedor incoerente dão erro', () => {
+    expect(() => validarPartidaUsuario(jogo(), partida(), { casa: 3, fora: 3, vencedor: 'casa' })).toThrow();
+    expect(() => validarPartidaUsuario(jogo(), partida(), { casa: 3, fora: 4, vencedor: 'casa' })).toThrow();
+  });
+});
+
+describe('correções da revisão: semente e envelhecimento', () => {
+  it('nova carreira exige semente inteira', () => {
+    expect(() => novaCarreira({ dados, clubeId: 'a0' })).toThrow();
+    expect(() => novaCarreira({ dados, clubeId: 'a0', semente: 1.5 })).toThrow();
+  });
+
+  it('a janela guarda o overall antes e depois de cada jogador', () => {
+    const c = jogarTemporada(draftCompleto(nova()));
+    const env = c.transferencias.envelhecimento;
+    expect(env).toHaveLength(15);
+    for (const e of env) {
+      expect(e).toEqual(expect.objectContaining({ id: expect.any(String), nome: expect.any(String), idade: expect.any(Number), ovrAntes: expect.any(Number), ovrDepois: expect.any(Number), aposentou: expect.any(Boolean) }));
+    }
+    expect(env.filter((e) => e.aposentou)).toHaveLength(c.transferencias.aposentados.length);
   });
 });

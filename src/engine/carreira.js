@@ -5,6 +5,7 @@ import { disputarPenaltis } from './penaltis.js';
 import { ordenarTabela } from './liga.js';
 import {
   criarBrasileirao, criarEstadual, criarCopaDoBrasil, criarContinental, jogosDaEtapa, registrarEtapa, campanha,
+  confrontoVaiAosPenaltis,
 } from './competicoes.js';
 import { montarCalendario } from './calendario.js';
 import { vagasContinentais, roletasDoFimDeTemporada } from './classificacao.js';
@@ -45,6 +46,7 @@ function alterar(carreira, fn) {
 export function novaCarreira({ dados, clubeId, duracao = 10, dificuldade = 'classico', formacao = '4-3-3', postura = 'equilibrada', semente }) {
   const clube = dados.clubes.find((x) => x.id === clubeId);
   if (!clube || !clube.serieA) throw new Error('Escolha um clube da Série A');
+  if (!Number.isInteger(semente)) throw new Error('Semente precisa ser um número inteiro');
   if (!DURACOES.includes(duracao)) throw new Error('Duração deve ser 5 ou 10 temporadas');
   if (!['classico', 'olheiro'].includes(dificuldade)) throw new Error('Dificuldade inválida');
   if (!POSTURAS.includes(postura)) throw new Error('Postura inválida');
@@ -202,13 +204,37 @@ export function proximaData(carreira, dados) {
   return { indice: t.indice, tipo: data.tipo, compId: null, jogo: null, importante: false };
 }
 
+// Confere se a partida jogada na tela é a deste jogo e terminou do jeito que a regra pede.
+// penaltis (opcional): disputa jogada na tela, { casa, fora, vencedor: 'casa' | 'fora', cobrancas }.
+export function validarPartidaUsuario(jogo, partida, penaltis = null) {
+  const erro = (m) => { throw new Error(`Partida ao vivo inválida: ${m}`); };
+  if (partida.casa.id !== jogo.casa || partida.fora.id !== jogo.fora) erro('não é o jogo desta data');
+  if (Boolean(partida.neutro) !== Boolean(jogo.neutro)) erro('campo neutro diferente do jogo');
+  if (partida.tempo < 2) erro('a partida não terminou');
+  if (partida.tempo === 3 && !jogo.prorrogacao) erro('este jogo não tem prorrogação');
+  if (partida.tempo === 2 && jogo.prorrogacao && partida.placar.casa === partida.placar.fora) erro('falta jogar a prorrogação');
+  if (penaltis) {
+    if (penaltis.casa === penaltis.fora) erro('disputa de pênaltis empatada');
+    if ((penaltis.casa > penaltis.fora ? 'casa' : 'fora') !== penaltis.vencedor) erro('vencedor dos pênaltis não bate com o placar');
+  }
+}
+
+// Se o resultado do usuário nesta data leva o confronto aos pênaltis (para a tela jogar a disputa).
+export function precisaDePenaltis(carreira, compId, resultado) {
+  return confrontoVaiAosPenaltis(carreira.temporadaAtual.competicoes[compId], resultado);
+}
+
 // Joga a próxima data inteira. partidaUsuario: estado final de uma partida jogada ao vivo (opcional);
-// sem ela, o jogo do usuário também é simulado.
-export function jogarData(carreira, dados, { partidaUsuario = null } = {}) {
+// sem ela, o jogo do usuário também é simulado. penaltisUsuario: disputa jogada na tela, se precisou.
+export function jogarData(carreira, dados, { partidaUsuario = null, penaltisUsuario = null } = {}) {
   exigirFase(carreira, 'temporada');
+  if (partidaUsuario && !proximaData(carreira, dados).jogo) {
+    throw new Error('Partida ao vivo inválida: o usuário não joga nesta data');
+  }
   return alterar(carreira, (c, rng) => {
     const t = c.temporadaAtual;
     const eu = c.config.clubeId;
+    let penaltisUsados = false;
     for (const compId of t.calendario[t.indice].comps) {
       const jogos = jogosDaEtapa(t.competicoes[compId]);
       const partidas = new Map();
@@ -217,9 +243,7 @@ export function jogarData(carreira, dados, { partidaUsuario = null } = {}) {
         const meu = jogo.casa === eu || jogo.fora === eu;
         let partida;
         if (meu && partidaUsuario) {
-          if (partidaUsuario.tempo < 2 || partidaUsuario.casa.id !== jogo.casa || partidaUsuario.fora.id !== jogo.fora) {
-            throw new Error('A partida ao vivo não corresponde ao jogo desta data');
-          }
+          validarPartidaUsuario(jogo, partidaUsuario, penaltisUsuario);
           partida = partidaUsuario;
         } else {
           const { casa, fora } = ladosDoJogo(c, dados, jogo);
@@ -234,13 +258,21 @@ export function jogarData(carreira, dados, { partidaUsuario = null } = {}) {
       });
       const penaltis = (casaId, foraId) => {
         const p = partidas.get(`${casaId}>${foraId}`);
-        const r = disputarPenaltis(setoresDoLado(p.casa, { progresso: 1 }), setoresDoLado(p.fora, { progresso: 1 }), rng);
-        if (doUsuario && doUsuario.jogo.casa === casaId && doUsuario.jogo.fora === foraId) doUsuario.penaltis = r;
-        return r.vencedor === 'casa' ? casaId : foraId;
+        const doUsuarioAqui = doUsuario && doUsuario.jogo.casa === casaId && doUsuario.jogo.fora === foraId;
+        let r;
+        if (doUsuarioAqui && penaltisUsuario) {
+          r = penaltisUsuario;
+          penaltisUsados = true;
+        } else {
+          r = disputarPenaltis(setoresDoLado(p.casa, { progresso: 1 }), setoresDoLado(p.fora, { progresso: 1 }), rng);
+        }
+        if (doUsuarioAqui) doUsuario.penaltis = r;
+        return { vencedor: r.vencedor === 'casa' ? casaId : foraId, casa: r.casa, fora: r.fora };
       };
       t.competicoes[compId] = registrarEtapa(t.competicoes[compId], resultados, { penaltis, rng });
       if (doUsuario) registrarJogoDoUsuario(c, compId, doUsuario);
     }
+    if (penaltisUsuario && !penaltisUsados) throw new Error('Este jogo não foi para os pênaltis');
     t.indice += 1;
     if (t.indice >= t.calendario.length) encerrarTemporada(c, dados, rng);
   });
@@ -259,7 +291,7 @@ function registrarJogoDoUsuario(c, compId, { jogo, partida, penaltis }) {
   t.jogos.push({
     indice: t.indice, compId, casa: jogo.casa, fora: jogo.fora,
     golsCasa: partida.placar.casa, golsFora: partida.placar.fora,
-    penaltis: penaltis ? { casa: penaltis.casa, fora: penaltis.fora } : null,
+    penaltis: penaltis ? { casa: penaltis.casa, fora: penaltis.fora, cobrancas: penaltis.cobrancas ?? [] } : null,
   });
 }
 
@@ -289,7 +321,12 @@ function encerrarTemporada(c, dados, rng) {
     c.fase = 'fim';
     return;
   }
+  const antes = c.elenco.jogadores;
   const { jogadores, aposentados } = envelhecer(Object.values(c.elenco.jogadores), rng);
+  const idsAposentados = new Set(aposentados.map((j) => j.id));
+  const envelhecimento = [...jogadores, ...aposentados].map((j) => ({
+    id: j.id, nome: j.nome, idade: j.idade, ovrAntes: antes[j.id].ovr, ovrDepois: j.ovr, aposentou: idsAposentados.has(j.id),
+  }));
   c.elenco.jogadores = Object.fromEntries(jogadores.map((j) => [j.id, j]));
   c.elenco.titulares = c.elenco.titulares.map((id) => (c.elenco.jogadores[id] ? id : null));
   c.elenco = completarTitulares(c.elenco);
@@ -298,6 +335,7 @@ function encerrarTemporada(c, dados, rng) {
     fila: [...aposentados.map(() => ({ tipo: 'reposicao', obrigatoria: true })), ...roletasDoFimDeTemporada(posicao, titulos)],
     atual: null,
     aposentados,
+    envelhecimento,
   };
   c.fase = 'transferencias';
 }
