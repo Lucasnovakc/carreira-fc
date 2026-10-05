@@ -10,6 +10,7 @@ import {
 import { montarCalendario } from './calendario.js';
 import { vagasContinentais, roletasDoFimDeTemporada } from './classificacao.js';
 import { envelhecer } from './envelhecimento.js';
+import { evoluirClubes } from './evolucaoClubes.js';
 import { girarRoleta } from './roleta.js';
 import {
   vagasDaFormacao, completarTitulares, escalacaoParaJogo, aplicarConsequencias, forcaMediaDoElenco,
@@ -21,12 +22,9 @@ import {
 // Fases: 'draft' -> 'temporada' -> 'transferencias' -> 'temporada' ... -> 'fim'
 
 export const CURINGAS = 3;
-export const OSCILACAO = 3;
 export const DURACOES = [5, 10];
 export const POSTURAS = ['defensiva', 'equilibrada', 'ofensiva'];
 const RODADAS_DECISIVAS = 5;
-const NOTA_MIN = 50;
-const NOTA_MAX = 90;
 
 const media = (n) => (n.gol + n.def + n.mei + n.ata) / 4;
 
@@ -125,13 +123,6 @@ function forcaDe(c, id) {
 function iniciarTemporada(carreira, dados) {
   return alterar(carreira, (c, rng) => {
     c.temporada += 1;
-    if (c.temporada > 1) {
-      for (const n of Object.values(c.notas)) {
-        for (const s of ['gol', 'def', 'mei', 'ata']) {
-          n[s] = Math.max(NOTA_MIN, Math.min(NOTA_MAX, n[s] + rng.int(-OSCILACAO, OSCILACAO)));
-        }
-      }
-    }
     const clube = dados.clubes.find((x) => x.id === c.config.clubeId);
     const serieA = dados.clubes.filter((x) => x.serieA).map((x) => x.id);
     const porForca = (ids) => [...ids].sort((a, b) => forcaDe(c, b) - forcaDe(c, a));
@@ -312,6 +303,10 @@ function encerrarTemporada(c, dados, rng) {
     temporada: c.temporada, titulos, posicaoBrasileirao: posicao, campanhas,
     artilheiro: artId ? { jogadorId: artId, nome: c.elenco.jogadores[artId]?.nome ?? artId, gols: artGols } : null,
   });
+  const notasOriginais = Object.fromEntries([...dados.clubes, ...dados.estrangeiros]
+    .map((x) => [x.id, { gol: x.gol, def: x.def, mei: x.mei, ata: x.ata }]));
+  const campeoesDeCopa = ['copaDoBrasil', 'libertadores', 'sulamericana'].map((id) => comps[id]?.campeao).filter(Boolean);
+  c.notas = evoluirClubes(c.notas, notasOriginais, { ordemBrasileirao: ordem, campeoes: campeoesDeCopa, excluir: eu }, rng);
   c.vagas = vagasContinentais(ordem, {
     copaDoBrasil: comps.copaDoBrasil?.campeao ?? null,
     libertadores: comps.libertadores?.campeao ?? null,

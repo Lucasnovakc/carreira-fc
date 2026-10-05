@@ -10,6 +10,8 @@ import {
 } from '../../src/engine/carreira.js';
 import { criarCopaDoBrasil, criarEstadual } from '../../src/engine/competicoes.js';
 import { criarRng } from '../../src/engine/rng.js';
+import { ordenarTabela } from '../../src/engine/liga.js';
+import { ajustePorPosicao } from '../../src/engine/evolucaoClubes.js';
 
 const dados = criarDados();
 const nova = (extra = {}) => novaCarreira({ dados, clubeId: 'a0', duracao: 5, semente: 42, ...extra });
@@ -178,12 +180,28 @@ describe('temporada', () => {
     expect(JSON.parse(JSON.stringify(a))).toEqual(a);
   });
 
-  it('notas dos clubes do computador oscilam no máximo 3 por temporada', () => {
+  it('no fim da temporada os clubes do computador evoluem pelo resultado no Brasileirão', () => {
+    const inicio = draftCompleto(nova());
+    const antes = structuredClone(inicio.notas);
+    const c = jogarTemporada(inicio);
+    const ordem = ordenarTabela(c.temporadaAtual.competicoes.brasileirao.tabelas.geral).map((l) => l.id);
+    ordem.forEach((id, i) => {
+      if (id === 'a0') return;
+      const aj = ajustePorPosicao(i + 1);
+      for (const s of ['gol', 'def', 'mei', 'ata']) {
+        if (c.notas[id][s] === 90 || c.notas[id][s] === 50) continue;
+        const d = c.notas[id][s] - antes[id][s];
+        expect(d, `${id} (${i + 1}º) ${s}`).toBeGreaterThanOrEqual(aj - 2);
+        expect(d, `${id} (${i + 1}º) ${s}`).toBeLessThanOrEqual(aj + 2);
+      }
+    });
+    expect(c.notas.a0).toEqual(antes.a0);
+  });
+
+  it('a nova temporada não mexe nas notas (a evolução acontece no fim da anterior)', () => {
     const c1 = jogarTemporada(draftCompleto(nova()));
     const c2 = resolverJanela(c1);
-    for (const [id, n] of Object.entries(c2.notas)) {
-      for (const s of ['gol', 'def', 'mei', 'ata']) expect(Math.abs(n[s] - c1.notas[id][s])).toBeLessThanOrEqual(3);
-    }
+    expect(c2.notas).toEqual(c1.notas);
   });
 });
 
