@@ -1,0 +1,9 @@
+[
+  { "id": "4-3-3", "descricao": "Equilíbrio total com três pontas.", "vagas": ["GOL", "LD", "ZAG", "ZAG", "LE", "VOL", "MC", "MC", "PD", "CA", "PE"] },
+  { "id": "4-4-2", "descricao": "Clássico, com dois atacantes e alas.", "vagas": ["GOL", "LD", "ZAG", "ZAG", "LE", "VOL", "MC", "PD", "PE", "CA", "CA"] },
+  { "id": "4-2-3-1", "descricao": "Dois volantes e um meia armador.", "vagas": ["GOL", "LD", "ZAG", "ZAG", "LE", "VOL", "VOL", "PD", "MEI", "PE", "CA"] },
+  { "id": "4-2-4", "descricao": "Ofensivo à moda antiga.", "vagas": ["GOL", "LD", "ZAG", "ZAG", "LE", "VOL", "MC", "PD", "CA", "CA", "PE"] },
+  { "id": "4-2-2-2", "descricao": "O quadrado mágico.", "vagas": ["GOL", "LD", "ZAG", "ZAG", "LE", "VOL", "VOL", "MEI", "MEI", "CA", "CA"] },
+  { "id": "4-5-1", "descricao": "Meio-campo povoado, um homem na frente.", "vagas": ["GOL", "LD", "ZAG", "ZAG", "LE", "VOL", "MC", "MC", "MEI", "MEI", "CA"] },
+  { "id": "4-3-1-2", "descricao": "Losango com camisa 10.", "vagas": ["GOL", "LD", "ZAG", "ZAG", "LE", "VOL", "MC", "MC", "MEI", "CA", "CA"] }
+]
