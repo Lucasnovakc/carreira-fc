@@ -3,6 +3,7 @@ import { useCarreira } from './estado/CarreiraContext.jsx';
 import { Inicio } from './telas/Inicio.jsx';
 import { NovaCarreira } from './telas/NovaCarreira.jsx';
 import { Draft } from './telas/Draft.jsx';
+import { Painel } from './telas/Painel.jsx';
 
 function Andamento() {
   const { carreira } = useCarreira();
@@ -21,6 +22,7 @@ export function App() {
   if (!carreira) tela = <NovaCarreira />;
   else if (mostrarInicio) tela = <Inicio onContinuar={() => setEntrou(true)} />;
   else if (carreira.fase === 'draft') tela = <Draft />;
+  else if (carreira.fase === 'temporada') tela = <Painel />;
   else tela = <Andamento />;
 
   return (
