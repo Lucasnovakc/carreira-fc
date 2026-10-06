@@ -40,4 +40,16 @@ describe('app: temporada', () => {
     await clicar(screen.getByText('Calendário'));
     expect(screen.getAllByText(/Paulistão|Carioca/).length).toBeGreaterThan(0);
   });
+
+  it('na aba Elenco, a vaga mostra o overall com a penalidade de posição', async () => {
+    montar();
+    await fazerDraft(); // o robô sempre pega o 1º jogador da lista, que é um goleiro
+    await clicar(screen.getByText('Elenco', { selector: 'button' }));
+    const vaga = (pos) => screen.getAllByRole('button').find((b) => (b.getAttribute('aria-label') ?? '').startsWith(`Vaga ${pos}:`));
+    // troca o goleiro titular com o ponta-esquerda (que também é goleiro de origem)
+    await clicar(vaga('GOL'));
+    await clicar(vaga('PE'));
+    expect(vaga('PE').textContent).toMatch(/\(−50%\)/);
+    expect(vaga('GOL').textContent).not.toMatch(/−/);
+  });
 });

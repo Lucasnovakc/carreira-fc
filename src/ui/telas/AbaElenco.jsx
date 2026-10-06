@@ -4,7 +4,7 @@ import { definirTatica } from '../../engine/carreira.js';
 import { vagasDaFormacao } from '../../engine/elenco.js';
 import { useCarreira } from '../estado/CarreiraContext.jsx';
 import { Campinho } from '../componentes/Campinho.jsx';
-import { reorganizar } from '../logica/escalacao.js';
+import { reorganizar, avaliarVaga } from '../logica/escalacao.js';
 
 // Toque em dois jogadores (no campo ou no banco) para trocá-los de lugar.
 export function AbaElenco() {
@@ -36,7 +36,9 @@ export function AbaElenco() {
   return (
     <>
       <p className="subtitulo">Toque em dois jogadores para trocá-los de lugar.</p>
+      {/* cada vaga mostra o overall que o jogador rende ali, com a penalidade de posição (como no draft) */}
       <Campinho vagas={vagas} ocupantes={titulares} mostrarOvr={!olheiro}
+        avaliacao={(i) => (titulares[i] ? avaliarVaga(titulares[i], vagas[i], config.dificuldade).texto : null)}
         selecionada={sel?.tipo === 'vaga' ? sel.i : null} onVaga={(i) => tocar({ tipo: 'vaga', i })} />
 
       <div className="secao">Reservas</div>
